@@ -1,0 +1,30 @@
+[
+  {
+    "file": "src/global.c",
+    "arguments": [
+      "gcc",
+      "-Wall",
+      "-I./include",
+      "-c",
+      "src/global.c",
+      "-o",
+      "src/global.o"
+    ],
+    "directory": "/home/etho/Lab/shell",
+    "output": "src/global.o"
+  },
+  {
+    "file": "src/utils.c",
+    "arguments": [
+      "gcc",
+      "-Wall",
+      "-I./include",
+      "-c",
+      "src/utils.c",
+      "-o",
+      "src/utils.o"
+    ],
+    "directory": "/home/etho/Lab/shell",
+    "output": "src/utils.o"
+  }
+]
