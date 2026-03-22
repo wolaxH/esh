@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <fcntl.h>
+#include <stdio.h>
 #include <string.h>
 
 int swPthFmt(char *path){
@@ -44,12 +45,14 @@ void redir(char *p){
     int O_flag;
 
     if (*p == '>'){
-        p += (*(p+1) == '>') ? 2 : 1;
         O_flag = (*(p+1) == '>') ?
             O_WRONLY | O_CREAT | O_APPEND :
             O_WRONLY | O_CREAT | O_TRUNC;
+        p += (*(p+1) == '>') ? 2 : 1;
+        
 
         f = strtok(p, " \t\n");
+
         fd = open(f, O_flag, 0644);
 
         if (fd == -1){
@@ -75,6 +78,7 @@ int forkwrapper(options opt, void (*builtInFunc)(char **, int), char *args[], in
     if (pid < 0) perror("fork");
 
     if (pid == 0){
+
         if (opt.isredir)
             redir(opt.redirP);
         if (opt.ispipe){

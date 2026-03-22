@@ -13,7 +13,6 @@ void builtIn_pwd(char *args[], int argc){
     char buf[MAX_PATH_LENGTH];
     if (getcwd(buf, MAX_PATH_LENGTH) == NULL) perror("getcwd");
     printf("%s\n", buf);
-
 }
 
 void builtIn_exit(char *args[], int argc){

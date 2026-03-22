@@ -13,7 +13,6 @@ void parse(char *input, char **args,int *argc, options *opt){
     //if redirection
     // parse_redir(input);
     split_redir(input, opt);
-
     int i = 0;
     char *sp;
     args[i] = strtok_r(input, " \t\n", &sp);
@@ -90,22 +89,24 @@ int main(void){
         int pipes[cmdsc-1][2];
         pid_t pids[cmdsc];
         int pidc = 0;
+
         for (int i = 0; i < cmdsc-1; i++) pipe(pipes[i]);
 
         for(int i = 0; i < cmdsc; i++){
             parse(cmds[i], args, &argc, &opt);
+
+            
             if (args[0] == NULL) continue;
             //set the pipe field of option
             if (opt.ispipe == 1){
                 opt.pipe[0] = (i > 0) ? pipes[i-1][0] : -1;
                 opt.pipe[1] = (i < cmdsc-1) ? pipes[i][1] : -1;
             }
-
             for (int i = 0; builtIn[i].name != NULL; i++){
                 if (strcmp(args[0], builtIn[i].name) == 0){
                     if ((redirable(args[0])) &&
                         (opt.ispipe || opt.isredir))
-                        pids[pidc++] = forkwrapper(opt, builtIn[i].func, args, argc, pipes, cmdsc);
+                        pids[pidc++] = forkwrapper(opt, builtIn[i].func, args, argc, pipes, cmdsc-1);
                     else
                         builtIn[i].func(args, argc);
                     goto next;
