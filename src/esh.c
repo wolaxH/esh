@@ -16,7 +16,25 @@ void parse(char *input, char **args,int *argc, options *opt){
     int i = 0;
     char *sp;
     args[i] = strtok_r(input, " \t\n", &sp);
-    while(args[i] != NULL){
+    while (args[i] != NULL) {
+        if (*sp == '"') {
+            char *l = sp + 1;
+            if (*l == '"') { // for argument is ""
+                args[++i] = "";
+                sp++;
+                char *p = sp;
+                strtok_r(NULL, " \t\n", &sp);
+                *p = 0;
+                continue;
+            }
+            while (*(++sp) != '"'); // to the character that is "
+            char *p = sp;
+            strtok_r(NULL, " \t\n", &sp);
+            *p = 0;
+            args[++i] = l;
+            continue;
+        }
+        
         args[++i] = strtok_r(NULL, " \t\n", &sp);
 
         // env var
@@ -59,11 +77,9 @@ int main(void){
     char *args[MAX_ARGS];
     int argc = 0;
     char cwd[MAX_PATH_LENGTH];
-    char *cmds[MAX_PIPE_COUNT]; // pointer to command, seprate command by |
+    char *cmds[MAX_PIPE_COUNT]; /* pointer to command, seprate the input by | */
     int cmdsc;
 
-
-    // flag
     options opt;
 
     FuncTbl builtIn[] = {
@@ -97,7 +113,7 @@ int main(void){
 
             
             if (args[0] == NULL) continue;
-            //set the pipe field of option
+            /* set the pipe field of option */
             if (opt.ispipe == 1){
                 opt.pipe[0] = (i > 0) ? pipes[i-1][0] : -1;
                 opt.pipe[1] = (i < cmdsc-1) ? pipes[i][1] : -1;
@@ -113,10 +129,10 @@ int main(void){
                 }
             }
 
-            // external command
+            /* external command  */
             pids[pidc++] = exec(args, opt, pipes, cmdsc-1);
         next:
-            i; //dummy
+            i;  /* To avoid the lable before the end of code block, that's a C23 extension */
         }
         for (int i = 0; i < cmdsc-1; i++) {
             close(pipes[i][0]);
