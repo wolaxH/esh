@@ -11,23 +11,14 @@
 
 void parse(char *input, char **args,int *argc, options *opt){
     //if redirection
-    // parse_redir(input);
     split_redir(input, opt);
     int i = 0;
     char *sp;
     args[i] = strtok_r(input, " \t\n", &sp);
     while (args[i] != NULL) {
-        if (*sp == '"') {
+        if (*sp == '"') { /* for argument is inside double quotes */
             char *l = sp + 1;
-            if (*l == '"') { // for argument is ""
-                args[++i] = "";
-                sp++;
-                char *p = sp;
-                strtok_r(NULL, " \t\n", &sp);
-                *p = 0;
-                continue;
-            }
-            while (*(++sp) != '"'); // to the character that is "
+            while (*(++sp) != '"'); /* to the character that is "  */
             char *p = sp;
             strtok_r(NULL, " \t\n", &sp);
             *p = 0;

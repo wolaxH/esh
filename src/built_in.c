@@ -57,7 +57,7 @@ void builtIn_unset(char *args[], int argc){
 
 void builtIn_echo(char *args[], int argc){
     for (int i = 1; i < argc; i++){
-        printf( "%s", args[i]);
+        printf( "%s ", args[i]);
     }
     printf("\n");
 }

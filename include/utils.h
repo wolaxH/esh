@@ -23,13 +23,14 @@ typedef struct{
 } options;
 
 /*========== function ==========*/
-/*
- * function ChangePathFormat
+/**
+ * @brerf a function that switch the format of path
  * this function switch the path format between /home/username/ and ~
  *
  * if change /home/username to ~ return 1
  * if change ~ to /home/username return 0
  * if fail return -1
+ * @param path just path
  */
 int swPthFmt(char *path);
 

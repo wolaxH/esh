@@ -29,8 +29,14 @@ void builtIn_exit(char *args[], int argc);
  */
 void builtIn_export(char *args[], int argc);
 
+/*
+ * to unset the envirment variable
+ */
 void builtIn_unset(char *args[], int argc);
 
+/*
+ * to print something
+ */
 void builtIn_echo(char* args[], int argc);
 
 #endif // BUILT_IN_H
