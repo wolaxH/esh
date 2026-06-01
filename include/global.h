@@ -13,6 +13,7 @@ typedef struct{
 } SSmap;
 
 extern char **environ;
+extern int EXIT;
 
 
 #endif // GLOBAL_H_

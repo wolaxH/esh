@@ -42,7 +42,6 @@ int swPthFmt(char *path);
  * the first character of the redirection part
  * otherwise opt.isredir = 0, redirP = NULL
  * @note this function should be call at thefirst of parse
- *
  * @param input the pointer to the user command
  */
 void split_redir(char *input, options *opt);
@@ -78,7 +77,7 @@ int redirable(char *cmd);
 
 /**
  * @bref split the pipe command
- * split the command by `|` and put each pointer to command to `cmds`
+ * split the command by `|` and `cmds` will point to each command
  * and then return the commands count
  *
  * @param input the user input

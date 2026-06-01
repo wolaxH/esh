@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 #include "utils.h"
 #include "built_in.h"
@@ -16,16 +19,19 @@ void parse(char *input, char **args,int *argc, options *opt){
     char *sp;
     args[i] = strtok_r(input, " \t\n", &sp);
     while (args[i] != NULL) {
-        if (*sp == '"') { /* for argument is inside double quotes */
+        /* for argument is inside double quotes */
+        if (*sp == '"') {
             char *l = sp + 1;
-            while (*(++sp) != '"'); /* to the character that is "  */
+
+            while (*(++sp) != '"');
             char *p = sp;
             strtok_r(NULL, " \t\n", &sp);
             *p = 0;
+
             args[++i] = l;
             continue;
         }
-        
+
         args[++i] = strtok_r(NULL, " \t\n", &sp);
 
         // env var
@@ -68,8 +74,13 @@ int main(void){
     char *args[MAX_ARGS];
     int argc = 0;
     char cwd[MAX_PATH_LENGTH];
+    char prompt[MAX_PATH_LENGTH + 8];
     char *cmds[MAX_PIPE_COUNT]; /* pointer to command, seprate the input by | */
     int cmdsc;
+
+    char history_file[MAX_PATH_LENGTH];
+    snprintf(history_file, sizeof(history_file), "%s/.esh_history", getenv("HOME"));
+    read_history(history_file);
 
     options opt;
 
@@ -83,14 +94,17 @@ int main(void){
         {NULL, NULL}
     };
 
-    while(1){
-        if (!getcwd(cwd, MAX_PATH_LENGTH)){
+    while(!EXIT){
+        if (!getcwd(cwd, MAX_PATH_LENGTH))
             perror("getcwd");
-        }
         swPthFmt(cwd);
-        printf("[%s] esh$ ", cwd);
-        fflush(stdout);
-        if (!fgets(input, MAX_INPUT, stdin)) break;
+
+        snprintf(prompt, MAX_PATH_LENGTH + 8, "[%s] esh$ ", cwd);
+        char *line = readline(prompt);
+        if (!line) break;
+        add_history(line);
+        strncpy(input, line, MAX_INPUT);
+        free(line);
 
         cmdsc = split_pipe(input, cmds, &opt);
         int pipes[cmdsc-1][2];
@@ -102,8 +116,7 @@ int main(void){
         for(int i = 0; i < cmdsc; i++){
             parse(cmds[i], args, &argc, &opt);
 
-            
-            if (args[0] == NULL) continue;
+            if (args[0] == NULL) continue; // empty input
             /* set the pipe field of option */
             if (opt.ispipe == 1){
                 opt.pipe[0] = (i > 0) ? pipes[i-1][0] : -1;
@@ -119,11 +132,10 @@ int main(void){
                     goto next;
                 }
             }
-
             /* external command  */
             pids[pidc++] = exec(args, opt, pipes, cmdsc-1);
         next:
-            i;  /* To avoid the lable before the end of code block, that's a C23 extension */
+            i;  /* To avoid the lable before the end of code block, the feature require C23+ */
         }
         for (int i = 0; i < cmdsc-1; i++) {
             close(pipes[i][0]);
@@ -132,5 +144,6 @@ int main(void){
         for (int i = 0; i < pidc; i++)
             waitpid(pids[i], NULL, 0);
     }
+    write_history(history_file);
     return 0;
 }

@@ -1,5 +1,5 @@
 #include "built_in.h"
-#include "global.h"
+//#include "global.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,8 +15,9 @@ void builtIn_pwd(char *args[], int argc){
     printf("%s\n", buf);
 }
 
-void builtIn_exit(char *args[], int argc){
-    exit(0);
+void builtIn_exit(char *args[], int argc) {
+    EXIT = 1;
+    //exit(0);
 }
 
 void builtIn_export(char *args[], int argc){

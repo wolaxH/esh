@@ -8,10 +8,11 @@ CC = gcc
 CFLAGS = -Wall -I./include
 SRCS = $(wildcard src/*.c)
 OBJS = $(SRCS:.c=.o)
+LDLIBS = -lreadline
 TARGET = esh
 
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET)
+	$(CC) $(OBJS) -o $(TARGET) $(LDLIBS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
